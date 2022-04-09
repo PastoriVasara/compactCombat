@@ -1,0 +1,135 @@
+<style>
+    .ccul {
+        list-style-type: none;
+        padding: 0;
+        border: 1px solid #ddd;
+    }
+
+    .ccul .ccli {
+        padding: 5px 5px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .ccli:hover {
+        background-color: #dddddd;
+        border: 2px solid aqua;
+    }
+
+    .advantage:hover {
+        background-color: lightgreen;
+    }
+
+    .disadvantage:hover {
+        background-color: indianred;
+    }
+
+    .ccul .ccli:last-child {
+        border-bottom: none
+    }
+
+    .item-image {
+        flex: 0 0 30px;
+        background-size: 30px;
+        margin-right: 5px;
+        height: 35px;
+    }
+
+    .item {
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .item-detail {
+        flex: 0 0 60px;
+    }
+</style>
+<form class="flexcol editable">
+    <b>Fixed header2</b><br>
+    {{header}}
+    <br>
+    <p> Actions </p>
+    <p> Bonus Actions </p>
+    <p> Reactions </p>
+    <br>
+    <ol class="ccul items-list inventory-list">
+        <li class="inventory-header flexrow">
+            <h3 class="item-name flexrow">Actions</h3>
+            <div class="item-detail item-name">Name</div>
+            <div class="item-detail item-cost">Cost</div>
+            <div class="item-detail item-damage">Damage</div>
+            <div class="item-detail item-something">Something</div>
+        </li>
+        {{#each content}}
+            <li class="ccli ccdataRow item flexrow" onclick="rowClick(this)">
+                <div class="flexrow rollable">
+                    <div class="item-image" style="background-image: url({{{img}}})"></div>
+                </div>
+                <div class="item-name flexrow">
+                    <div>{{{name}}}</div>
+                </div>
+                <div class="item-name flexrow">
+                    <div>{{{actionCost}}}</div>
+                </div>
+            </li>
+        {{/each}}
+    </ol>
+    Fixed <em>footer</em><br>
+    {{footer}}
+</form>
+<script>
+    $(document).on('keydown', function (event) {
+        if (event.altKey) {
+            $('body').css('cursor', 'zoom-in');
+            $(".ccdataRow").addClass("advantage")
+        } else if (event.ctrlKey) {
+            $('body').css('cursor', 'zoom-out');
+            $(".ccdataRow").addClass("disadvantage")
+        }
+    });
+    $(document).on('keyup', function (event) {
+        $('body').css('cursor', 'default');
+        $(".ccdataRow").removeClass("advantage disadvantage")
+    });
+    //
+    // populateActions(actions) {
+    //     let members = [];
+    //
+    //     for(let i = 0; i < actions.length; i++) {
+    //         console.log(actions[i].item);
+    //         let row = "<div>";
+    //         console.log(actions[i].name);
+    //         row += "<img src='" + actions[i].img + "' id='"+actions[i].item+"' width='36' height='36' onClick='rowClick(this)'>";
+    //         row += "<span>" + actions[i].name + " | </span>";
+    //         row += "<span>" + actions[i].actionCost + " | </span>";
+    //         if(actions[i].damage != 'no damage')
+    //         {
+    //             row += "<span>" + actions[i].damage + " | </span>";
+    //         }
+    //         row[i].toHit == null ? null : row += "<span>" + actions[i].toHit + " | </span>";
+    //         if(!actions[i].save == null)
+    //         {
+    //             row += "<span>" + actions[i].save.ability + " | </span>";
+    //             row += "<span>" + actions[i].save.dc + "</span>";
+    //         }
+    //
+    //         row += "</div>";
+    //         members.push({data: row});
+    //     }
+    //     return members;
+    // }
+
+    //    <img alt="image" width="36" height="36" src="{{{img}}}"/> <span> {{{name}}} | {{{actionCost}}} | {{{damage}}} | {{{toHit}}} | {{{save}}}</span>
+
+
+    function rowClick(event) {
+        console.log("Hello");
+        let player = game.user;
+        let actorId = player.data.character;
+        let actor = game.actors.get(actorId);
+        console.log(event);
+        actor.items.get(event.id).roll();
+
+        console.log(actor);
+    }
+</script>

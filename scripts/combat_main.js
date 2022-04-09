@@ -10,26 +10,41 @@ function rowClick(event)
     console.log(actor);
 }
 
-
-class canvasButton extends CanvasLayer {
-    actor;
-    newButtons = {
-        activeTool: "DrawSquare",
-        name: "grid",
-        icon: "fas fa-wrench",
-        layer: "grid",
-        title: "Grid Controls",
-        tools: [
-            {
-                icon: "fas fas fa-square",
-                name: "DrawSquare",
-                title: "Configure the grid by drawing a square",
-                onClick: () => this._dialogRenderer(),
-            }
-        ]
-    };
-    constructor() {
+class CcFormApplication extends FormApplication {
+    constructor(exampleOption) {
         super();
+        this.exampleOption = exampleOption;
+    }
+
+    static get defaultOptions() {
+        let options = {
+            height: 720,
+            width: 800,
+            resizable: true,
+            dragDrop: [{dragSelector: ".item-list .item", dropSelector: null}],
+            classes: ['form'],
+            popOut: true,
+            template: `./modules/compactCombat/templates/ccTemplate.html`,
+            id: 'cc-form-application',
+            title: 'Compact Combat',
+        };
+        console.log("options", super.defaultOptions, options);
+        return mergeObject(super.defaultOptions, options);
+    }
+
+    getData() {
+        return {
+            header: "Header",
+            content: getActions(this.actor.data.items)
+        }
+    }
+
+    activateListeners(html) {
+        super.activateListeners(html);
+    }
+
+    asznc__updateObject(event, formData) {
+        console.log(formData.exampleInput)
     }
 
     _getActor() {
@@ -38,52 +53,6 @@ class canvasButton extends CanvasLayer {
         this.actor = game.actors.get(actorId);
     }
 
-    populateActions(actions) {
-        let members = [];
-        
-        for(let i = 0; i < actions.length; i++) {
-            console.log(actions[i].item);
-            let row = "<div>";
-            console.log(actions[i].name);
-            row += "<img src='" + actions[i].img + "' id='"+actions[i].item+"' width='36' height='36' onClick='rowClick(this)'>";
-            row += "<span>" + actions[i].name + " | </span>";
-            row += "<span>" + actions[i].actionCost + " | </span>";
-            if(actions[i].damage != 'no damage')
-            {
-                row += "<span>" + actions[i].damage + " | </span>";
-            }
-            row[i].toHit == null ? null : row += "<span>" + actions[i].toHit + " | </span>";
-            if(!actions[i].save == null)
-            {
-                row += "<span>" + actions[i].save.ability + " | </span>";
-                row += "<span>" + actions[i].save.dc + "</span>";
-            }
-
-            row += "</div>";
-            members.push({data: row});
-        }
-        return members;
-    }
-
-    
-    async _dialogRenderer() {
-        this.populateActions(getActions(this.actor.data.items));
-        const templateData = { header: "Handlebars header text.",
-            content: this.populateActions(getActions(this.actor.data.items))};
-        const renderedContent = await renderTemplate("modules/compactCombat/templates/random.hbs", templateData);
-        const dialog = new Dialog({
-            title: "Uus Dialog",
-            content: renderedContent,
-            buttons: {
-                toggle: {
-                    icon: '<i class="fas fa-check"></i>',
-                    label: "Okay",
-                    callback: () => console.log(this.actor.items)
-                }
-            }
-        });
-        dialog.render(true);
-    }
 
     initialize() {
         this._getActor();
@@ -136,14 +105,30 @@ function getActions(items)
     return actionList;
 }
 
-
-let canbut = new canvasButton();
-
-Hooks.on('ready', () => {
-    canbut.initialize();
-});
+function getButtons(form) {
+    console.log("Form", form);
+    return newButtons = {
+        activeTool: "DrawSquare",
+        name: "grid",
+        icon: "fas fa-wrench",
+        layer: "grid",
+        title: "Grid Controls",
+        tools: [
+            {
+                icon: "fas fas fa-square",
+                name: "DrawSquare",
+                title: "Configure the grid by drawing a square",
+                onClick: () => form.render(true),
+            }
+        ]
+    };
+}
 Hooks.on('getSceneControlButtons', controls => {
-    controls.push(canbut.newButtons);
+    window.CcFormApplication = CcFormApplication;
+    let newccFormApplication = new CcFormApplication("example");
+    newccFormApplication.initialize();
+    controls.push(getButtons(newccFormApplication));
+    newccFormApplication.render()
 });
 
 
