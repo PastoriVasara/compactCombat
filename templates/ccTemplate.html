@@ -5,7 +5,7 @@
         border: 1px solid #ddd;
     }
 
-    .ccul .ccli {
+    .ccul .ccli .ccol {
         padding: 5px 5px;
         border-bottom: 1px solid #ddd;
     }
@@ -23,7 +23,7 @@
         background-color: indianred;
     }
 
-    .ccul .ccli:last-child {
+    .ccul .ccol .ccli:last-child {
         border-bottom: none
     }
 
@@ -35,47 +35,152 @@
     }
 
     .item {
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
+        align-items: center;
+        padding: 0 2px;
     }
 
     .item-detail {
-        flex: 0 0 60px;
+        flex: 0 0 80px;
+        font-size: 12px;
+        text-align: center;
+        border-right: 1px solid lightslategrey;
+        word-break: break-word;
+        white-space: nowrap;
+        overflow: hidden;
     }
 </style>
 <form class="flexcol editable">
-    <b>Fixed header2</b><br>
-    {{header}}
-    <br>
-    <p> Actions </p>
-    <p> Bonus Actions </p>
-    <p> Reactions </p>
-    <br>
-    <ol class="ccul items-list inventory-list">
+    <ol class="ccol items-list inventory-list">
         <li class="inventory-header flexrow">
             <h3 class="item-name flexrow">Actions</h3>
-            <div class="item-detail item-name">Name</div>
             <div class="item-detail item-cost">Cost</div>
             <div class="item-detail item-damage">Damage</div>
-            <div class="item-detail item-something">Something</div>
+            <div class="item-detail item-type">Type</div>
+            <div class="item-detail item-tohit">To Hit</div>
+            <div class="item-detail item-save">Save</div>
         </li>
         {{#each content}}
-            <li class="ccli ccdataRow item flexrow" onclick="rowClick(this)">
-                <div class="flexrow rollable">
-                    <div class="item-image" style="background-image: url({{{img}}})"></div>
-                </div>
-                <div class="item-name flexrow">
-                    <div>{{{name}}}</div>
-                </div>
-                <div class="item-name flexrow">
-                    <div>{{{actionCost}}}</div>
-                </div>
-            </li>
+            {{#ifeq actionCost "action"}}
+                <li class="ccli ccdataRow item flexrow" onclick="rowClick(this)">
+                    <div class="flexrow rollable">
+                        <div class="item-image" style="background-image: url({{{img}}})"></div>
+                        <div class="item-name">
+                            <div>{{{name}}}</div>
+                        </div>
+                    </div>
+                    <div class="item-detail item-cost">
+                        <div class="item-detail">
+                            {{{actionCost}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-damage">
+                        <div class="item-detail">
+                            {{{damage}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-type">
+                        <div class="item-detail">
+                            {{{actionType}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-tohit">
+                        <div class="item-detail">
+                            {{{toHit}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-save">
+                        <div class="item-detail">
+                            {{~#if save}} {{save.ability}} / {{save.dc}} {{/if}}
+                        </div>
+                    </div>
+                </li>
+            {{/ifeq}}
         {{/each}}
     </ol>
-    Fixed <em>footer</em><br>
-    {{footer}}
+    <ol class="ccol items-list inventory-list">
+        <li class="inventory-header flexrow">
+            <h3 class="item-name flexrow">Bonus Actions</h3>
+        </li>
+        {{#each content}}
+            {{#ifeq actionCost "bonus"}}
+                <li class="ccli ccdataRow item flexrow" onclick="rowClick(this)">
+                    <div class="flexrow rollable">
+                        <div class="item-image" style="background-image: url({{{img}}})"></div>
+                        <div class="item-name">
+                            <div>{{{name}}}</div>
+                        </div>
+                    </div>
+                    <div class="item-detail item-cost">
+                        <div class="item-detail">
+                            {{{actionCost}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-damage">
+                        <div class="item-detail">
+                            {{{damage}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-type">
+                        <div class="item-detail">
+                            {{{actionType}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-tohit">
+                        <div class="item-detail">
+                            {{{toHit}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-save">
+                        <div class="item-detail">
+                            {{~#if save}} {{save.ability}} / {{save.dc}} {{/if}}
+                        </div>
+                    </div>
+                </li>
+            {{/ifeq}}
+        {{/each}}
+    </ol>
+    <ol class="ccol items-list inventory-list">
+        <li class="inventory-header flexrow">
+            <h3 class="item-name flexrow">Reactions</h3>
+        </li>
+        {{#each content}}
+            {{#ifeq actionCost "reaction"}}
+                <li class="ccli ccdataRow item flexrow" onclick="rowClick(this)">
+                    <div class="flexrow rollable">
+                        <div class="item-image" style="background-image: url({{{img}}})"></div>
+                        <div class="item-name">
+                            <div>{{{name}}}</div>
+                        </div>
+                    </div>
+                    <div class="item-detail item-cost">
+                        <div class="item-detail">
+                            {{{actionCost}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-damage">
+                        <div class="item-detail">
+                            {{{damage}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-type">
+                        <div class="item-detail">
+                            {{{actionType}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-tohit">
+                        <div class="item-detail">
+                            {{{toHit}}}
+                        </div>
+                    </div>
+                    <div class="item-detail item-save">
+                        <div class="item-detail">
+                            {{~#if save}} {{save.ability}} / {{save.dc}} {{/if}}
+                        </div>
+                    </div>
+                </li>
+            {{/ifeq}}
+        {{/each}}
+    </ol>
 </form>
 <script>
     $(document).on('keydown', function (event) {
