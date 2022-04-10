@@ -39,29 +39,91 @@
         white-space: nowrap;
         overflow: hidden;
     }
+    .item-name {
+        font-size: 0.8em;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+    }
 
     .item-detail {
         flex: 0 0 60px;
     }
+    .grid-container
+    {
+        display: grid;
+        grid-template-columns:repeat(10, 10%);
+        grid-template-rows: repeat(10, 10%);
+    }
+    .grid-skills
+    {
+        grid-row-start:2;
+        grid-column-start:1;
+        grid-column-end:5;
+        grid-row-end:7;
+    }
+    .grid-actions
+    {
+        grid-row-start:1;
+        grid-column-start:5;
+        grid-column-end:-1;
+        grid-row-end:7;
+        overflow: scroll;
+
+    }
+    .grid-health
+    {
+        font-size: 2em;
+        grid-row-start:1;
+        grid-column-start:1;
+        grid-column-end:5;
+        grid-row-end:2;
+    }
 </style>
-<form class="flexcol editable">
-    <b>Fixed header2</b><br>
-    {{header}}
-    <br>
-    <p> Actions </p>
-    <p> Bonus Actions </p>
-    <p> Reactions </p>
-    <br>
-    <ol class="ccul items-list inventory-list">
+
+<form class="grid-container">
+    <section class="grid-health">
+        <div class = "flexrow">
+        <div class = "ac"><b>AC:</b>{{{content.abilities.ac}}}</div>
+        <div class = "hp"><b>HP:</b>{{{content.abilities.hp.current}}} / {{{content.abilities.hp.max}}}</div>
+        </div>
+        <div class = "speed"><b>Speed:</b>{{{content.abilities.move}}} ft</div>
+    </section>
+    <section class="grid-skills">
+        <h3>Skills</h3>
+        <ol class="ccul items-list inventory-list"></ol>
         <li class="inventory-header flexrow">
-            <h3 class="item-name flexrow">Actions</h3>
-            <div class="item-detail item-name">Name</div>
-            <div class="item-detail item-cost">Cost</div>
-            <div class="item-detail item-damage">Damage</div>
-            <div class="item-detail item-something">Something</div>
+            <div>Prof</div>
+            <div>Skill</div>
+            <div>Bonus</div>
         </li>
-        {{#each content}}
-            <li class="ccli ccdataRow item flexrow" onclick="rowClick(this)">
+        {{#each content.abilities.skills}}
+        <li class="ccli ccdataRow item flexrow">
+                <div>{{proficiency}}</div>
+                <div>{{name}}</div>
+                <div>+{{mod}}</div>
+            </div>
+        {{/each}}
+    </section>
+    <section class="grid-actions">
+        <div class="flexrow">
+            <button type="button" id="action_button" onClick=toggle(this)>Actions</button>
+            <button type="button" id="bonus_button" onClick=toggle(this)>Bonus Actions</button>
+            <button type="button" id="reaction_button" onClick=toggle(this)>Reactions</button>
+
+        </div>
+        {{#each content.actions}}
+        <div id="{{@key}}">
+        <ol class="ccul items-list inventory-list"></ol>
+        <li class="inventory-header flexrow">
+            <h3 class="item-name flexrow">{{@key}}</h3>
+            <div class="item-name flexrow2">Name</div>
+            <div class="item-name flexrow">Cost</div>
+            <div class="item-name flexrow">Damage</div>
+            <div class="item-name flexrow">To Hit</div>
+        </li>
+            {{#each this}}
+            <li class="ccli ccdataRow item flexrow" id="{{{item}}}" onclick=rowClick(this)>
                 <div class="flexrow rollable">
                     <div class="item-image" style="background-image: url({{{img}}})"></div>
                 </div>
@@ -71,11 +133,35 @@
                 <div class="item-name flexrow">
                     <div>{{{actionCost}}}</div>
                 </div>
+                {{#unless damage}}
+                <div class="item-name flexrow"></div>
+                {{else}}
+                <div class="item-name flexrow">
+                    <div>{{{damage}}}</div>
+                </div>
+                {{/unless}}
+                {{#unless toHit}}
+                    {{#unless save}}
+                    <div class="item-name flexrow"></div>
+                    {{else}}
+                    <div class="item-name flexrow">
+                        <div>{{{save.ability}}}/{{save.dc}}</div>
+                    </div>
+                    {{/unless}}
+                {{else}}
+                <div class="item-name flexrow">
+                    <div>{{{toHit}}}</div>
+                </div>
+                {{/unless}}
             </li>
+        
+            {{/each}}
+        
+
+        </ol>
+        </div>
         {{/each}}
-    </ol>
-    Fixed <em>footer</em><br>
-    {{footer}}
+    </section>
 </form>
 <script>
     $(document).on('keydown', function (event) {
@@ -91,45 +177,24 @@
         $('body').css('cursor', 'default');
         $(".ccdataRow").removeClass("advantage disadvantage")
     });
-    //
-    // populateActions(actions) {
-    //     let members = [];
-    //
-    //     for(let i = 0; i < actions.length; i++) {
-    //         console.log(actions[i].item);
-    //         let row = "<div>";
-    //         console.log(actions[i].name);
-    //         row += "<img src='" + actions[i].img + "' id='"+actions[i].item+"' width='36' height='36' onClick='rowClick(this)'>";
-    //         row += "<span>" + actions[i].name + " | </span>";
-    //         row += "<span>" + actions[i].actionCost + " | </span>";
-    //         if(actions[i].damage != 'no damage')
-    //         {
-    //             row += "<span>" + actions[i].damage + " | </span>";
-    //         }
-    //         row[i].toHit == null ? null : row += "<span>" + actions[i].toHit + " | </span>";
-    //         if(!actions[i].save == null)
-    //         {
-    //             row += "<span>" + actions[i].save.ability + " | </span>";
-    //             row += "<span>" + actions[i].save.dc + "</span>";
-    //         }
-    //
-    //         row += "</div>";
-    //         members.push({data: row});
-    //     }
-    //     return members;
-    // }
 
-    //    <img alt="image" width="36" height="36" src="{{{img}}}"/> <span> {{{name}}} | {{{actionCost}}} | {{{damage}}} | {{{toHit}}} | {{{save}}}</span>
-
+    function toggle(el) {
+        var id = $(el).attr('id').split('_')[0];
+        var element = document.getElementById(id);
+        console.log(element);
+        console.log(id);
+        if (element.style.display === "none") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
+    }
 
     function rowClick(event) {
-        console.log("Hello");
         let player = game.user;
         let actorId = player.data.character;
         let actor = game.actors.get(actorId);
-        console.log(event);
         actor.items.get(event.id).roll();
-
-        console.log(actor);
     }
+
 </script>

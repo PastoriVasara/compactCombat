@@ -7,7 +7,8 @@
       "name": "Me!"
     }
   ],
-  "scripts": [
+  "scripts":[],
+  "esmodules": [
     "scripts/combat_main.js"
   ],
   "version": "1",
