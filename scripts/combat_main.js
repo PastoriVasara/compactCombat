@@ -1,14 +1,4 @@
-function rowClick(event) 
-{
-    console.log("Hello");
-    let player = game.user;
-    let actorId = player.data.character;
-    let actor = game.actors.get(actorId);
-    console.log(event);
-    actor.items.get(event.id).roll();
-
-    console.log(actor);
-}
+import {getAbilities,getActions} from './character_stats.js';
 
 class CcFormApplication extends FormApplication {
     constructor(exampleOption) {
@@ -33,9 +23,14 @@ class CcFormApplication extends FormApplication {
     }
 
     getData() {
+        console.log('? data ?');
+        var abilities = getAbilities(this.actor);
+        var actions = getActions(this.actor.data.items);
+        console.log(abilities);
+        console.log(actions);
         return {
             header: "Header",
-            content: getActions(this.actor.data.items)
+            content: {'abilities' : abilities, 'actions' : actions}
         }
     }
 
@@ -59,70 +54,26 @@ class CcFormApplication extends FormApplication {
     }
     
 }
-function getActions(items)
-{
-    console.log(items);
-    var actionList = [];
-    for (const [key,value] of items.entries())
-    {
-        console.log(key);
-        var item_info = value.data;
-        var item_details = item_info.data;
-        if (item_details.actionType == null || item_details.actionType == 'other' || item_details.actionType == ''){
-            continue;
-        }
-  
-        var damage_parts = item_details.damage.parts;
-        var damage_print = '';
-        for( var i = 0; i < damage_parts.length; i++){
-
-            damage_print += damage_parts[i][0].split('[')[0];
-        }
- 
-        if (item_details.damage.versatile != '')
-        {
-            damage_print += "  /  "  +item_details.damage.versatile.split('[')[0];
-        }
-        damage_print == '' ? damage_print = 'no damage' : damage_print;
-     
-        actionList.push( 
-        {
-            'name': item_info.name,
-            'img': item_info.img,
-            'actionCost' : item_details.activation.type,
-            'actionType': item_details.actionType,
-            'damage': damage_print,
-            'toHit': 'toHit' in value.labels ? value.labels.toHit : null,
-            'save': item_details.save.dc == null ? null : { 
-                'ability': item_details.save.ability,
-                'dc': item_details.save.dc,
-            
-            },
-            'item': key
-        });
-        console.log(value);
-    }
-    return actionList;
-}
 
 function getButtons(form) {
     console.log("Form", form);
-    return newButtons = {
-        activeTool: "DrawSquare",
-        name: "grid",
-        icon: "fas fa-wrench",
+    return {
+        activeTool: "CombatHelper",
+        name: "combat",
+        icon: "fas fa-receipt",
         layer: "grid",
-        title: "Grid Controls",
+        title: "Combat Helper",
         tools: [
             {
-                icon: "fas fas fa-square",
-                name: "DrawSquare",
-                title: "Configure the grid by drawing a square",
+                icon: "fas fa-bong",
+                name: "CombatHelperDialog",
+                title: "Open combat helper",
                 onClick: () => form.render(true),
             }
         ]
     };
 }
+
 Hooks.on('getSceneControlButtons', controls => {
     window.CcFormApplication = CcFormApplication;
     let newccFormApplication = new CcFormApplication("example");
