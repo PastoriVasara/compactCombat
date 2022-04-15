@@ -1,0 +1,398 @@
+<style>
+
+    ul.filters {
+        flex: 0 0 10px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .filter h4 {
+        flex: none !important;
+        margin-right: 5px !important;
+    }
+
+    h4.combat-tracker-title {
+        height: 18px;
+        line-height: 16px;
+        margin: 2px 5px 2px;
+        font-family: "Modesto Condensed", "Palatino Linotype", serif;
+        font-size: 20px;
+        font-weight: 700;
+        font-size: 18px;
+        color: #4b4a44;
+        border-bottom: 1px solid #c9c7b8;
+        white-space: nowrap;
+    }
+
+    .action-value {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 28px;
+        line-height: 28px;
+        font-family: "Modesto Condensed", "Palatino Linotype", serif;
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .actions-values {
+        padding-top: 5px;
+    }
+
+    .action-value input {
+        width: 10px;
+    }
+
+
+    .dnd5e.sheet.actor .inventory-list .item .item-name.rollable:hover .item-image {
+        background-image: url("/icons/svg/d20.svg") !important;
+    }
+
+    .dnd5e.sheet.actor .inventory-list .item .item-name.rollable.advantage:hover .item-image {
+        background-image: url("/icons/svg/d20-highlight.svg") !important;
+    }
+
+    .dnd5e.sheet.actor .inventory-list .item .item-name.rollable.disadvantage:hover .item-image {
+        background-image: url("/icons/svg/d20-grey.svg") !important;
+    }
+
+    .heals {
+        flex: 0 0 20%;
+        align-items: center;
+    }
+
+    .heals button {
+        width: 100px;
+        height: 20px;
+        padding: 0;
+        margin-bottom: 2px;
+        margin-top: 2px;
+    }
+
+    .heals button h4 {
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+        font-family: "Modesto Condensed", "Palatino Linotype", serif;
+        font-weight: 700;
+    }
+
+    .heals-input {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .heals-input input {
+        width: 50px;
+        border: 1px #4b4a44 solid !important;
+    }
+
+    .conditions {
+        flex: 0 0 20%;
+        align-items: center;
+    }
+
+    .conditions label {
+        flex: 0 !important;
+        margin-right: 10px;
+    }
+
+
+</style>
+
+<form class="editable flexcol">
+    {{!-- Sheet Header --}}
+    <header class="sheet-header flexrow">
+        <section class="header-details flexrow">
+            <ul class="attributes flexrow">
+                <li class="flexcol heals" style="flex: 0 0 20%">
+                    <button id="heal-button">
+                        <h4> HEAL </h4>
+                    </button>
+                    <div class="heals-input">
+                        <input id="heal-damage-input" type="text" placeholder="0"/>
+                    </div>
+                    <button id="damage-button">
+                        <h4> DAMAGE </h4>
+                    </button>
+                </li>
+                <div class="form-group conditions">
+                    <label>Conditions</label>
+                    <select class="actor-size" name="data.traits.size">
+                        {{#select data.traits.size}}
+                            {{#each conditions as |condition|}}
+                                <option value="{{size}}">{{condition.name}}</option>
+                            {{/each}}
+                        {{/select}}
+                    </select>
+                </div>
+            </ul>
+
+            {{!-- Header Attributes --}}
+            <ul class="attributes flexrow">
+                <li class="attribute health">
+                    <h4 class="attribute-name box-title">{{ localize "DND5E.HitPoints" }}</h4>
+                    <div class="attribute-value multiple">
+                        <input name="data.attributes.hp.value" type="text"
+                               value="{{data.attributes.hp.value}}" placeholder="10"
+                               data-dtype="Number" title="{{localize 'DND5E.HitPointsCurrent'}}">
+                        <span class="sep"> / </span>
+                        <input name="data.attributes.hp.max" type="text"
+                               value="{{data.attributes.hp.max}}" placeholder="10"
+                               data-dtype="Number" title="{{localize 'DND5E.HitPointsMax'}}">
+                    </div>
+                    <footer class="attribute-footer">
+                        <input name="data.attributes.hp.temp" type="text" class="temphp"
+                               placeholder="+{{ localize 'DND5E.Temp' }}"
+                               value="{{data.attributes.hp.temp}}" data-dtype="Number"
+                               title="{{localize 'DND5E.HitPointsTemp'}}">
+                        <input name="data.attributes.hp.tempmax" type="text" class="temphp"
+                               placeholder="+{{ localize 'DND5E.Max' }}"
+                               value="{{data.attributes.hp.tempmax}}" data-dtype="Number"
+                               title="{{localize 'DND5E.HitPointsTempMax'}}">
+                    </footer>
+                </li>
+
+                <li class="attribute hit-dice">
+                    <h4 class="attribute-name box-title">
+                        {{ localize "DND5E.HitDice" }}
+                        <a class="config-button" data-action="hit-dice" title="{{localize 'DND5E.HitDiceConfig'}}"><i
+                                class="fas fa-cog"></i></a>
+                    </h4>
+                    <div class="attribute-value multiple">
+                        <label class="hit-dice">
+                            <span title="{{localize 'DND5E.HitDiceRemaining'}}">{{data.attributes.hd}}</span>
+                            <span class="sep"> / </span>
+                            <span title="{{localize 'DND5E.HitDiceMax'}}">{{data.details.level}}</span>
+                        </label>
+                    </div>
+                    <footer class="attribute-footer">
+                        <a class="rest short-rest" title="{{localize 'DND5E.ShortRest'}}">{{ localize "DND5E.RestS"
+                        }}</a>
+                        <a class="rest long-rest" title="{{localize 'DND5E.LongRest'}}">{{ localize "DND5E.RestL" }}</a>
+                    </footer>
+                </li>
+
+                <li class="attribute armor">
+                    <h4 class="attribute-name box-title">
+                        {{ localize "DND5E.ArmorClass" }}
+                        <a class="config-button" data-action="armor" title="{{localize 'DND5E.ArmorConfig'}}"><i
+                                class="fas fa-cog"></i></a>
+                    </h4>
+                    <div class="attribute-value attributable" data-property="attributes.ac">
+                        <span>{{data.attributes.ac.value}}</span>
+                    </div>
+                    <footer class="attribute-footer">
+                        <span class="spell-dc">{{localize "DND5E.SpellDC"}} {{data.attributes.spelldc}}</span>
+                    </footer>
+                </li>
+
+                <li class="attribute movement">
+                    <h4 class="attribute-name box-title">
+                        {{ localize "DND5E.Movement" }}
+                        <a class="config-button" data-action="movement" title="{{localize 'DND5E.MovementConfig'}}"><i
+                                class="fas fa-cog"></i></a>
+                    </h4>
+                    <div class="attribute-value">
+                        <span>{{data.attributes.movement.walk}} {{data.attributes.movement.units}}</span>
+                    </div>
+                    <footer class="attribute-footer">
+                        <span>{{movement.special}}</span>
+                    </footer>
+                </li>
+
+                <li class="attribute initiative">
+                    <h4 class="attribute-name box-title rollable" data-action="rollInitiative">{{ localize
+                            "DND5E.Initiative" }}</h4>
+                    <div class="attribute-value">
+                        <span>{{numberFormat data.attributes.init.total decimals=0 sign=true}}</span>
+                    </div>
+                    <footer class="attribute-footer">
+                        <span>{{ localize "DND5E.Modifier" }}</span>
+                        <input name="data.attributes.init.value" type="text" data-dtype="Number" placeholder="0"
+                               value="{{numberFormat data.attributes.init.value decimals=0 sign=true}}"/>
+                    </footer>
+                </li>
+            </ul>
+        </section>
+    </header>
+    <section class="sheet-body">
+        <div class="tab attributes flexrow">
+            {{!-- Ability Scores --}}
+            <ul class="ability-scores">
+                {{#each abilities as |ability id|}}
+                    <li class="ability {{#if ability.proficient}}proficient{{/if}}" data-ability="{{id}}">
+                        <h4 class="ability-name box-title rollable">{{id}}</h4>
+                        <h4 class="ability-score ability-name rollable">{{ability.value}}</h4>
+                        <div class="ability-modifiers flexrow">
+                            <span class="ability-mod" title="Ability Modifier">{{numberFormat ability.mod decimals=0
+                                                                                              sign=true}}</span>
+                            <input type="hidden" name="data.abilities.{{id}}.proficient" value="{{ability.baseProf}}"
+                                   data-dtype="Number"/>
+                            <span class="proficiency-toggle ability-proficiency" title="Proficiency"></span>
+                            <span class="ability-save" title="Saving Throw">{{numberFormat ability.save decimals=0
+                                                                                           sign=true}}</span>
+                        </div>
+                    </li>
+                {{/each}}
+            </ul>
+            {{!-- Skills --}}
+            <ul class="skills-list">
+                {{#each skills as |skill id|}}
+                    <li class="skill flexrow {{#if skill.value}}proficient{{/if}}" data-skill="{{id}}">
+                        <a class="proficiency-toggle skill-proficiency">{{{skill.icon}}}</a>
+                        <div class="skill-name-controls">
+                            <h4 class="skill-name rollable">{{skill.label}}</h4>
+                        </div>
+                        <span class="skill-ability">{{skill.ability}}</span>
+                        <span class="skill-mod"
+                              title="{{skill.label}}">{{numberFormat skill.total decimals=0 sign=true}}</span>
+                        <span class="skill-passive" title="{{skill.label}}">({{skill.passive}})</span>
+                    </li>
+                {{/each}}
+                <div class="flexrow actions-values">
+                    <li class="attribute hit-dice">
+                        <h4 class="attribute-name combat-tracker-title">
+                            Actions
+                        </h4>
+                        <div class="action-value multiple">
+                            <label class="hit-dice">
+                                <input name="flags.combatTracker.action" type="text"
+                                       value="{{flags.combatTracker.action}}" placeholder="0"
+                                       data-dtype="Number" title="flags.combatTracker.action">
+                                <span class="sep"> / </span>
+                                <input name="flags.combatTracker.maxActions" type="text"
+                                       value="{{flags.combatTracker.maxActions}}" placeholder="0"
+                                       data-dtype="Number" title="flags.combatTracker.maxActions">
+                            </label>
+                        </div>
+                    </li>
+                    <li class="attribute hit-dice">
+                        <h4 class="attribute-name attribute-name combat-tracker-title">
+                            Bonus Actions
+                        </h4>
+                        <div class="action-value multiple">
+                            <label class="hit-dice">
+                                <input name="flags.combatTracker.bonus" type="text"
+                                       value="{{flags.combatTracker.bonus}}" placeholder="0"
+                                       data-dtype="Number" title="flags.combatTracker.bonus">
+                                <span class="sep"> / </span>
+                                <input name="flags.combatTracker.maxBonus" type="text"
+                                       value="{{flags.combatTracker.maxBonus}}" placeholder="0"
+                                       data-dtype="Number" title="flags.combatTracker.maxBonus">
+                            </label>
+                        </div>
+                    </li>
+                    <li class="attribute hit-dice">
+                        <h4 class="attribute-name attribute-name combat-tracker-title">
+                            Reactions
+                        </h4>
+                        <div class="action-value multiple">
+                            <label class="hit-dice">
+                                <input name="flags.combatTracker.reaction" type="text"
+                                       value="{{flags.combatTracker.reaction}}" placeholder="0"
+                                       data-dtype="Number" title="flags.combatTracker.reaction">
+                                <span class="sep"> / </span>
+                                <input name="flags.combatTracker.maxReactions" type="text"
+                                       value="{{flags.combatTracker.maxReactions}}" placeholder="0"
+                                       data-dtype="Number" title="flags.combatTracker.maxReactions">
+                            </label>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+            {{!-- Items --}}
+            <section class="center-pane flexcol">
+                <ul class="filters">
+                    <div class="counters flexrow">
+                        <div class="counter flexrow inspiration filter">
+                            <h4>Filter Equipped</h4>
+                            <div class="counter-value">
+                                <input type="checkbox" name="filters.equipped"
+                                       {{#if filters.equipped}}checked{{/if}} data-dtype="Boolean">
+                            </div>
+                        </div>
+                        <div class="counter flexrow inspiration filter" style="padding-left: 5px">
+                            <h4>Filter Prepared</h4>
+                            <div class="counter-value">
+                                <input type="checkbox" name="filters.prepared"
+                                       {{#if filters.prepared}}checked{{/if}} data-dtype="Boolean">
+                            </div>
+                        </div>
+                        <div class="counter flexrow inspiration filter" style="padding-left: 5px">
+                            <h4>Combat Tracker</h4>
+                            <div class="counter-value">
+                                <input type="checkbox" name="filters.combatTracker"
+                                       {{#if filters.combatTracker}}checked{{/if}} data-dtype="Boolean">
+                            </div>
+                        </div>
+                    </div>
+                </ul>
+                {{#each items}}
+                    <div id="{{@key}}">
+                        <ol class="inventory-list items-list">
+                            <li class="items-header flexrow">
+                                <h3 class="item-name flexrow">{{@key}}</h3>
+                                <div class="item-detail item-cost">Cost123</div>
+                                <div class="item-detail item-damage">Damage</div>
+                                <div class="item-detail item-tohit">To Hit</div>
+                            </li>
+                            <ol class="item-list">
+                                {{#each this}}
+                                    <li class="item flexrow" data-item-id="{{{id}}}">
+                                        <div class="flexrow item-name rollable item-roll">
+                                            <div class="item-image" style="background-image: url({{{data.img}}})"></div>
+                                            <h4>{{{data.name}}}</h4>
+                                        </div>
+                                        <div class="item-cost item-detail">
+                                            <div>{{{data.data.activation.cost}}}</div>
+                                        </div>
+                                        {{#unless data.data.damage}}
+                                            <div class="item-detail item-damage"></div>
+                                        {{else}}
+                                            <div class="item-detail item-damage">
+                                                <div>{{{data.data.damage.parts}}}</div>
+                                            </div>
+                                        {{/unless}}
+                                        {{#unless labels.toHit}}
+                                            {{#unless data.data.save}}
+                                                <div class="item-detail item-tohit"></div>
+                                            {{else}}
+                                                <div class="item-detail item-tohit">
+                                                    <div>{{{data.data.save.ability}}}/{{data.data.save.dc}}</div>
+                                                </div>
+                                            {{/unless}}
+                                        {{else}}
+                                            <div class="item-detail item-tohit">
+                                                <div>{{{labels.toHit}}}</div>
+                                            </div>
+                                        {{/unless}}
+                                    </li>
+                                {{/each}}
+                            </ol>
+                        </ol>
+                    </div>
+                {{/each}}
+            </section>
+        </div>
+    </section>
+
+</form>
+<script>
+    $(document).on('keydown', function (event) {
+        if (event.altKey) {
+            $('body').css('cursor', 'zoom-in !important');
+            $(".rollable").addClass("advantage")
+        } else if (event.ctrlKey) {
+            $('body').css('cursor', 'zoom-out !important');
+            $(".rollable").addClass("disadvantage")
+        }
+    });
+    $(document).on('keyup', function (event) {
+        $('body').css('cursor', 'default');
+        $(".rollable").removeClass("advantage disadvantage")
+    });
+
+</script>

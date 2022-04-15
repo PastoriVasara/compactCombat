@@ -12,6 +12,16 @@
   "esmodules": [
     "scripts/combat_main.js"
   ],
+  "dependencies": [
+    {
+      "name": "more-hooks-5e",
+      "manifest": "https://github.com/ElfFriend-DnD/foundryvtt-more-hooks-5e/releases/download/0.6.1/module.json"
+    },
+    {
+      "name": "dnd5e",
+      "type": "system"
+    }
+  ],
   "version": "1",
   "minimumCoreVersion": "0.8.8"
 }
