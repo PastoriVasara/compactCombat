@@ -183,7 +183,7 @@ class CcFormApplication extends FormApplication {
         if (formData) {
             await this._updateData(formData, this.actor);
         }
-        this.render(true);
+        this.render();
     }
 
     activateListeners(html) {
@@ -230,9 +230,11 @@ class CcFormApplication extends FormApplication {
     }
 
     _onUpdateItem(item) {
+        console.log("updateItem", item);
         this._updateObject();
     }
     _onUpdateActorData(data) {
+        console.log("Update Actor Data", data);
         this._updateObject();
     }
 
@@ -314,7 +316,8 @@ class CcFormApplication extends FormApplication {
         this.actor = this._getActor();
         this.combatTracker = new CCCombatTracker(this.actor);
         await this.combatTracker.initialize();
-        this._updateObject();
+        this.actor = await this._getActor();
+        this.render(true);
     }
 
 }

@@ -9,5 +9,8 @@
 - Show if item has Uses
 - Char Resources (Like Infuse Item, Tinkering etc)
 - Death Saves
-- Advantage/Disadvantage highlight on Abilities and Skills
+- Item info on name click like in character sheet.
+- Conditions
 ###Bugs
+- CombatTracker doesn't work (Onupdatecombat hook at least). Seems to be on Colorhammers side, because locally works.
+
